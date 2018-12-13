@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itany.mapper.ManagerUserMapper">
+    <sql id="managerUserColumn">
+        id,
+        username,
+        password,
+        supplierid
+    </sql>
+    
+    
+    <!--findAllByName-->
+    <resultMap id="mapper1" type="com.itany.pojo.ManagerUser">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <collection property="roleList" ofType="com.itany.pojo.Role" select="s1" column="id">
+        </collection>
+    </resultMap>
+    <resultMap id="m1" type="com.itany.pojo.Role">
+        <id column="rname" property="name"/>
+    </resultMap>
+
+    <select id="selectByName" resultMap="mapper1">
+        select m.id,m.username,m.password
+        from t_manager_user m
+        <where>
+            <if test="username != null and username != ''">
+                and username like '%${username}%'
+            </if>
+        </where>
+    </select>
+    <select id="s1" resultMap="m1">
+        select r.name rname from t_user_role ur
+        join t_role r on r.id = ur.roleid
+        where userid = #{id}
+    </select>
+
+    <!--tree-->
+    <resultMap id="mapper2" type="com.itany.vo.TreeVo">
+        <id column="id" property="id"/>
+        <result column="name" property="text"/>
+    </resultMap>
+    <select id="selectAllRoleName" resultMap="mapper2">
+        select id,name from t_role
+    </select>
+
+    <!--insert-->
+    <insert id="insertManagerUser" parameterType="com.itany.pojo.ManagerUser" useGeneratedKeys="true" keyProperty="id">
+        insert into t_manager_user (username,password)
+        values (#{username},#{password})
+    </insert>
+    
+    <insert id="insertRoleByUserId">
+        insert into t_user_role
+        (userid,roleid)
+        values
+        (#{userId},#{roleId})
+    </insert>
+
+    <select id="selectRoleByUserId" resultMap="mapper2">
+        select id name from t_user_role
+        where roleid = #{roleId};
+
+    </select>
+
+
+
+</mapper>

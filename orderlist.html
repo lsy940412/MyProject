@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>订单列表</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+	    //工具栏
+	    var toolbar = [{
+	        text: '修改',
+	        iconCls: 'icon-edit',
+	        handler: function () {  $('#dd').dialog('open');}
+	    }];
+	   $(function(){
+	       $('#booklist').datagrid({  
+				title:'订单列表',  
+				iconCls:'icon-save',   
+				url:'json/datagrid_data1.json',  
+				columns:[[  
+					{field:'a',title:'订单号码',width:100,align:'center'},  
+					{field:'b',title:'支付宝单号',width:200,align:'center'},  
+					{field:'d',title:'下单用户',width:80,align:'center'},  
+					{field:'e',title:'状态',width:200,align:'center'}]],  
+				toolbar: toolbar,  
+				pagination: true,//表示在datagrid设置分页              
+               	pageSize: 5,
+				singleSelect:true,
+                pageList: [5,10,20]
+			});
+
+		 //初始化查询栏
+		 $("#submit_search").linkbutton({ iconCls: 'icon-search', plain: true })
+            .click(function () {
+                $('#dg').datagrid({ queryParams: form2Json("searchform") });   //点击搜索
+            });
+          
+          //初始化修改窗口  
+         $('#dd').dialog({
+			    title: 'My Dialog',
+			    width: 700,
+			    height: 500,
+			    closed: true,
+			    cache: false,
+			    href: '',
+			    modal: true,
+			    iconCls: 'icon-save',
+                buttons: [{
+                    text:'提交',
+                    iconCls:'icon-ok',
+                    handler:function(){
+                        alert('ok');
+                    }
+                },{
+                    text:'关闭',
+                    handler:function(){
+                        alert('cancel');;
+                    }
+                }]
+			});
+            
+	   });
+	</script>
+</head>
+<body>
+   <form name="searchform" method="post" action="" id ="searchform">
+    <td width="70" height="30"><strong>订单查询：</strong></td>
+    <td height="30">
+        <input type="text" name="keyword" size=20 placeholder="订单号"/>
+        <input type="text" name="keyword" size=20 placeholder="支付宝单号"/>
+    </td>
+	<td>
+	  <a id="submit_search">搜索</a>
+	</td>
+  </form>
+  <table id="booklist"></table>
+    <div id="dd">
+           <div align="center" style="margin-top: 30px">
+            <form id="ff" method="post">
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="name" style="width:50%" data-options="label:'订单号:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="email" style="width:50%" data-options="label:'支付宝单号:',required:true,validType:'email'">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="subject" style="width:50%" data-options="label:'下单用户:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="message" style="width:50%;height:60px" data-options="label:'订单地址:',multiline:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="message" style="width:50%;height:60px" data-options="label:'状态:',multiline:true">
+            </div>  
+        </form>
+           </div>
+    </div>
+</body>
+</html>

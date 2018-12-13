@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itany.mapper.RoleMapper">
+
+    <!--find all mapper begin-->
+    <resultMap id="mapper1" type="com.itany.pojo.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="list" ofType="com.itany.pojo.Permission" select="s1" column="id">
+        </collection>
+    </resultMap>
+
+    <resultMap id="mapper2" type="Permission">
+        <id column="p1id" property="id"/>
+        <result column="p1name" property="name"/>
+        <result column="p1sname" property="sname"/>
+        <result column="p1url" property="url"/>
+        <result column="p1parentid" property="parentid"/>
+        <association property="parent" javaType="com.itany.pojo.Permission">
+            <id column="p2name" property="name"/>
+        </association>
+    </resultMap>
+    <!--find all mapper begin-->
+
+
+<!--find all begin-->
+    <select id="selectByName" parameterType="String" resultMap="mapper1">
+        select id,name
+        from t_role
+        <where>
+            <if test="name != null and name != ''">
+                and name like '%${name}%'
+            </if>
+        </where>
+    </select>
+    <select id="s1" resultMap="mapper2">
+        select p1.id p1id,p1.name p1name,p1.url p1url,p1.sname p1sname,p1.parentid p1pid,p2.name p2name
+        from t_permission p1
+        left join t_permission p2  on p1.parentid = p2.id
+        left join t_role_permission rp on rp.permissionid = p1.id
+        where rp.roleid = #{id}
+    </select>
+<!--find all end-->
+
+    <select id="selectById" resultType="Integer">
+       select permissionid from t_role_permission where roleid = #{id}
+    </select>
+
+    <update id="updateRoleNameByRoleId" >
+        update t_role set name = #{name}
+        where id = #{id}
+    </update>
+    <delete id="deletePermissionByRoleId">
+        delete from t_role_permission where roleid = #{id}
+    </delete>
+    <insert id="insertPermissionByRoleId">
+        insert into t_role_permission (roleid,permissionid)
+        values (#{roleid},#{permissionid})
+    </insert>
+    <delete id="deleteRoleByRoleId" >
+        delete from t_role where id = #{id}
+    </delete>
+</mapper>

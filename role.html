@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>权限列表</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+	    //工具栏
+	    var toolbar = [{
+	        text: '修改',
+	        iconCls: 'icon-edit',
+	        handler: function () {
+	            var row = $('#userlist').datagrid('getSelected');
+                $("#ah").tree({
+                    url : '/manager/role/findPermission/'+row.id
+                })
+               $("#roleId").textbox("setValue",row.id);
+                $("#roleName").textbox("setValue",row.name);
+	            $('#dd').dialog('open');
+	        }
+	    }, '-', {
+	        text: '删除',
+	        iconCls: 'icon-cancel',
+	        handler: function () {
+	            console.log("------delete------")
+	            var row = $('#userlist').datagrid('getSelected');
+	            $.ajax({
+                    type:"post",
+                    url:'/manager/role/remove/'+row.id,
+                    success:function (result) {
+                        if (result.success ==  true){
+                            alert('删除成功')
+                            location.href = '/manager/showrole';
+                        }
+                    }
+                })
+	            }
+	    }];
+
+
+	   $(function(){
+
+	       $('#userlist').datagrid({  
+			title:'角色列表',  
+			iconCls:'icon-save',   
+			url:'/manager/role/findByName',
+			columns:[
+			    [
+				{field:'id',title:'角色ID',width:100,align:'center'},
+				{field:'name',title:'角色名称',width:100,align:'center'},
+				{field:'list',title:'角色拥有的权限[权限名 | 权限URL | 模块名 | 操作名 ]',width:500,align:'center',formatter:format}
+			]
+            ],
+               pagination:true,
+               singleSelect:true,
+               toolbar: toolbar
+		});
+
+		 //初始化查询栏
+		 $("#submit_search").linkbutton({ iconCls: 'icon-search', plain: true })
+            .click(function () {
+                $('#userlist').datagrid('load',{
+                    "name":$("#role_name").val(),
+                });
+            });
+          
+          //初始化修改窗口  
+         $('#dd').dialog({
+			    title: 'My Dialog',
+			    width: 700,
+			    height: 500,
+			    closed: true,
+			    cache: false,
+			    href: '',
+			    modal: true,
+			    iconCls: 'icon-save',
+                buttons: [{
+                    text:'提交',
+                    iconCls:'icon-ok',
+                    handler:function(){
+
+                       var permissionids  = $("#ah").tree("getChecked");
+                       var ids = new Array();
+                       for (var i=0;i<permissionids.length;i++){
+                           ids.push(permissionids[i].id);
+                       }
+                        var list = ids.join(",");
+
+                        $.ajax({
+                            type:"post",
+                            url:"/manager/role/modify",
+                            data:{
+                                "id":$("#roleId").textbox("getValue"),
+                                "name":$("#roleName").textbox("getValue"),
+                                "list":list
+                            },
+                            success:function (data) {
+                                if(data.success== true){
+                                    $("#dd").dialog("close");
+                                    $('#userlist').datagrid('load');
+                                }
+                            }
+                        })
+                    }
+                },{
+                    text:'关闭',
+                    handler:function(){
+                        $('#dd').dialog('close');
+                    }
+                }]
+			});
+		   //tree选项框初始化
+           $("#ah").tree({
+               url:'/manager/role/findPermission',
+			   method:'post',
+			   animate:true,
+			   checkbox:true
+           });
+            
+	   });
+	   
+	    //列格式化方法
+	   function format(val,row){
+	        var sel="<select name='search_type'>";
+	                for(var i = 0;i< val.length;i++ ){
+	                    var parentName;
+                        if(val[i].parent == null){
+	                         parentName = "根权限";
+                        }else {
+	                        parentName = val[i].parent.name;
+                        }
+                        sel = sel +"<option>"+ val[i].name+"|"+val[i].url+"|"+parentName+"|"+val[i].sname+"</option>";
+
+                    }
+                sel = sel + "</select>";
+			return sel;
+	  }
+	</script>
+</head>
+<body>
+   <form name="searchform" method="post" action="" id ="searchform">
+    <td width="70" height="30"><strong>角色查询：</strong></td>
+    <td height="30">
+        <input type="text"  name="keyword" size=20 placeholder="角色名称" id="role_name"/>
+        <a id="submit_search">搜索</a>
+    </td>
+  </form>
+  <table id="userlist"></table>
+    <div id="dd">
+           <div align="center" style="margin-top: 30px">
+            <form id="ff" method="post">
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" id="roleId"  style="width:50%" data-options="label:'角色ID:'" readonly="readonly"/>
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" id="roleName"  style="width:50%" data-options="label:'角色名称:',required:true">
+            </div>
+             <div style="margin-bottom:20px">
+                  <table style="width:48%">
+                    <td valign="top" style="width:50px">
+                                                              权限:
+                    </td>
+                    <td><ul id="ah"></ul></td>
+                  </table>
+            </div>
+        </form>
+           </div>
+    </div>
+</body>
+</html>

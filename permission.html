@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>权限列表</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+	    //工具栏
+	    var toolbar = [{
+	        text: '修改',
+	        iconCls: 'icon-edit',
+	        handler: function () {
+
+	            var row = $('#userlist').datagrid("getSelected");
+
+                $.ajax({
+                    type:"post",
+                    url:"/manager/permission/findById/"+row.id,
+                    success:function (data) {
+
+                        if (data.success == true) {
+                           $("#per_id").textbox("setValue",data.permission.id);
+                           $("#per_name").textbox("setValue",data.permission.name);
+                           $("#per_url").textbox("setValue",data.permission.url);
+                           $("#per_sname").textbox("setValue",data.permission.sname);
+                        }
+                    }
+                });
+                console.log(row);
+               $("#per_parent_id").combobox("select",row.parentid);
+                $('#dd').dialog('open');
+            }
+	    }];
+
+
+	   $(function(){
+	       $('#userlist').datagrid({
+
+			title:'权限列表',
+			iconCls:'icon-save',   
+			url:'/manager/permission/findByName',
+			columns:[
+			    [
+				{field:'id',title:'权限ID',width:100,align:'center'},
+				{field:'name',title:'权限名称',width:100,align:'center'},
+				{field:'url',title:'权限URL',width:100,align:'center'},
+				{field:'parent',title:'权限所在模块',width:80,align:'center', formatter: test},
+				{field:'sname',title:'权限操作名称',width:200,align:'center'}
+			]
+            ],
+			pagination:true,
+            singleSelect:true,
+			toolbar: toolbar  
+		});
+           /*--------显示所有最高权限---------*/
+           function  test(value,row) {
+               if(null == value){
+                   return "最高权限";
+               }else {
+                   return value.name;
+               }
+           }
+           /*--------查询所有根权限---------*/
+           $("#per_parent_id").combobox({
+               url:'/manager/permission/findParent',
+               method:"post",
+               valueField:"id",
+               textField:"name"
+           });
+
+
+		 //初始化查询栏
+		 $("#submit_search").linkbutton({ iconCls: 'icon-search', plain: true })
+            .click(function () {
+                console.log($("#name").val());
+                $("#userlist").datagrid('load',{
+                    "name":$("#name").val(),
+                    "parentName":$("#parentName").val(),
+                });
+               // $('#dg').datagrid({ queryParams: form2Json("searchform") });//点击搜索
+            });
+          
+          //初始化修改窗口  
+         $('#dd').dialog({
+			    title: 'My Dialog',
+			    width: 700,
+			    height: 500,
+			    closed: true,
+			    cache: false,
+			    href: '',
+			    modal: true,
+			    iconCls: 'icon-save',
+                buttons: [{
+                    text:'提交',
+                    iconCls:'icon-ok',
+                    handler:function(){
+                        $('#ff').form('submit',{
+                            url:"/manager/permission/modify" ,
+                         success:function(data){
+                                if(data.success == true){
+                                    $("#dd").dialog("close");
+                                    $('#userlist').datagrid('load');
+                                }
+
+                        }
+                        });
+                    }
+                },
+                    {
+                    text:'关闭',
+                    handler:function(){
+                        $("#dd").dialog("close");
+                        $('#userlist').datagrid('load');
+                    }
+                }]
+			});
+            
+	   });
+	</script>
+</head>
+<body>
+   <form name="searchform" method="post" action="" id ="searchform">
+    <td width="70" height="30"><strong>权限查询：</strong></td>
+    <td height="30">
+        <input type="text" name="keyword" size=20 placeholder="模块名称" id="parentName"/>
+        <input type="text" name="keyword" size=20 placeholder="权限名称" id="name"/>
+        <a id="submit_search">搜索</a>
+    </td>
+  </form>
+  <table id="userlist"></table>
+    <div id="dd">
+           <div align="center" style="margin-top: 30px">
+            <form id="ff" method="post">
+            <div style="margin-bottom:20px">
+                <input id="per_id" class="easyui-textbox" name="id" style="width:50%" data-options="label:'权限ID:'" readonly="readonly"/>
+            </div>
+             <div style="margin-bottom:20px">
+                <input id="per_url" class="easyui-textbox" name="url" style="width:50%" data-options="label:'权限url:'" readonly="readonly"/>
+            </div>
+            <div style="margin-bottom:20px">
+                <input  id="per_name" class="easyui-textbox" name="name" style="width:50%" data-options="label:'权限名称:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input id="per_sname" class="easyui-textbox" name="sname" style="width:50%" data-options="label:'操作名称:'">
+            </div>
+
+
+
+            <div style="margin-bottom:20px">
+                <select id="per_parent_id"  class="easyui-combobox" name="parentId" label="所属模块:" style="width:50%" data-options="multiple:false" >
+		        </select>
+            </div>
+        </form>
+           </div>
+    </div>
+</body>
+</html>

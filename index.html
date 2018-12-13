@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>书城首页</title>
+		<!-- 设置360浏览器渲染引擎 -->
+		<meta name="renderer" content="webkit">
+		<link rel="icon" type="image/png" href="img/favicon.png">
+		<link rel="stylesheet" type="text/css" href="amazeui/css/amazeui.css" />
+		<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="amazeui/js/amazeui.js"></script>
+		<!-- 全局CSS -->
+		<link rel="stylesheet" href="./css/base.css">
+		<!-- topbar css -->
+		<link rel="stylesheet" href="./css/topbar.css">
+		<!-- 当前页面 css -->
+		<link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<!-- topbar js -->
+		<script src="./js/common/topbar.js"></script>
+		<!-- 当前页面功能 js -->
+		<script src="./js/pages/index.js"></script>
+		<script type="text/javascript">
+			/*//获取cookie中的值
+            function getCookie(c_name)
+            {
+                if (document.cookie.length>0)
+                {
+                    c_start=document.cookie.indexOf(c_name + "=")
+                    if (c_start!=-1)
+                    {
+                        c_start=c_start + c_name.length+1
+                        c_end=document.cookie.indexOf(";",c_start)
+                        if (c_end==-1) c_end=document.cookie.length
+                        return unescape(document.cookie.substring(c_start,c_end))
+                    }
+                }
+                return ""
+            }
+
+
+            var webSocket=null;
+            if('webSocket' in window){
+				username=getCookie("BOOK_TOKEN");
+                webSocket = new WebSocket("ws://localhost:9003/webSocket/"+username);
+
+            }else {
+                alert("error")
+            }
+            console.log(webSocket);
+            webSocket.onmessage=function (event) {
+                setMsg(event.data);
+                if(event.data.flag ="1") {
+                    webSocket.onclose();
+                }
+            }
+
+			function setMsg(data){
+                var json=eval("("+data+")");
+				alert(json.msg);
+			}
+
+            webSocket.onclose=function () {
+                location.href="/user/showlogin";
+			}
+
+			window.onbeforeunload=function () {
+                webSocket.close();
+			}*/
+		</script>
+	</head>
+	<body>
+		
+		<!-- nav-start -->
+		<header class="am-topbar">
+			<div class="am-container base-nav-font">
+				<div class="am-fl base-nav-title">
+					<em>欢迎光临网博图书网</em>
+					<a href="#">请登录</a>
+					<a href="#">免费注册</a>
+				</div>
+				<ol class="am-fr base-nav-list">
+					<li>
+						<a href="#">购物车</a>
+					</li>
+					<li><a href="#">我的订单</a></li>
+					<li>
+						<div class="base-menu-list">
+							<a>个人账户 <span class="am-icon-caret-down"></span></a>
+							<div class="base-menu-list-content">
+								<ul >
+									<li><a href="#">个人信息</a></li>
+									<li><a href="#">收货地址</a></li>									
+								</ul>
+							</div>
+						</div>
+					</li>
+				</ol>
+			</div>
+		</header>
+		<!-- nav-end -->
+		<!-- search-end -->
+		<div class="am-container base-search">
+			<div class="am-g">
+				<div class="am-u-sm-3 base-logo">
+					<img src="./img/logo.png">
+				</div>
+				<div class="am-u-sm-6 ">
+					<div class="am-input-group am-input-group-warning">
+						<input type="text" class="am-form-field am-round">
+						<span class="am-input-group-btn">
+							<button class="am-btn am-btn-warning am-round" type="button">搜索</button>
+						</span>
+					</div>
+					<div class="base-world-key">
+						<ol class="am-breadcrumb am-breadcrumb-slash">
+							<li><a href="#">史蒂芬·霍金</a></li>
+							<li><a href="#">刺杀骑士团长</a></li>
+							<li><a href="#">蒙台梭利育儿全书</a></li>
+							<li><a href="#">阿加莎·克里斯蒂</a></li>							
+						</ol>
+					</div>
+				</div>
+				<div class="am-u-sm-3 am-u-end base-tip">
+					<img src="./img/tip.png">
+				</div>
+			</div>
+		</div>
+		<!-- search-end -->
+		<!-- shopNav-start -->
+		<div class="topbar-shop-nav">
+			<div class="am-container" >
+				<div class="am-u-sm-2 topbar-shop-types" id="typesOneMenu">
+					<h4>图书分类</h4>
+				</div>
+				<div class="am-u-sm-10 am-u-end topbar-shop-class">
+					<!-- 最多展示 9 个 -->
+					<ul class="am-avg-sm-9 am-thumbnails">
+						<li class="topbar-active"><a href="./index.html">首页</a></li>
+						<li><a href="./sellBook.html">淘书团</a></li>
+						<li><a href="./bestSelling.html">畅销榜</a></li>
+						<li><a href="./newBooks.html">新上架</a></li>
+						<li><a href="./platformSelf.html">平台自营</a></li>
+                    	<li><a href="./pressList.html">出版社直销</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- shopNav-end -->
+		<!-- books types start -->
+		<div class="am-container topbar-book-content">
+			<div class="am-u-sm-2 topbar-book-types">
+				<!-- ID 为鼠标移入时 加载对应分类的子分类 -->
+				<ul class="am-list" id="bookTypesMenu">
+					<!-- 
+						页面分类 最多被迭代 6 次  （默认只能展示六项一级分类）
+						一级分类 数据 超量 ，会导致页面布局混乱
+								数据 不足 ，不会影响页面布局
+						data-types 属性用于事件区分 分类
+					-->
+					<li data-type="literature">
+						<p>文学<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<!-- 子分类展示 最多显示2行，超出的部分会被自动隐藏 -->
+							<li><a href="#">小说</a></li>
+							<li><a href="#">文集</a></li>
+							<li><a href="#">青春文学</a></li>
+							<li><a href="#">中国散文</a></li>
+							<li><a href="#">外国散文</a></li>
+							<li><a href="#">悬疑推理</a></li>
+							<li><a href="#">世界名著</a></li>
+						</ol>
+					</li>
+					<li data-type="sciences">
+						<p>社科<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<li><a href="#">历史</a></li>
+							<li><a href="#">哲学/宗教</a></li>
+							<li><a href="#">政治军事</a></li>
+							<li><a href="#">传记</a></li>
+							<li><a href="#">文化</a></li>
+							<li><a href="#">古籍</a></li>
+							<li><a href="#">管理</a></li>
+							<li><a href="#">经济</a></li>        				
+						</ol>
+					</li>
+					<li data-type="juvenile">
+						<p>少儿<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<li><a href="#">中国儿童文学</a></li>
+							<li><a href="#">外国儿童文学</a></li>
+							<li><a href="#">科普读物</a></li>
+							<li><a href="#">动漫/卡通</a></li>
+							<li><a href="#">幼儿启蒙</a></li>        				
+						</ol>
+								
+					</li>
+					<li data-type="art">
+						<p>艺术<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<li><a href="#">绘画</a></li>
+							<li><a href="#">书法篆刻</a></li>
+							<li><a href="#">艺术理论</a></li>
+							<li><a href="#">摄影</a></li>
+							<li><a href="#">音乐</a></li>     				
+						</ol>
+							
+					</li>
+					<li data-type="life">
+						<p>生活<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<li><a href="#">美食</a></li>
+							<li><a href="#">保健/心理健康</a></li>
+							<li><a href="#">旅游</a></li>
+							<li><a href="#">家庭教育</a></li>
+							<li><a href="#">家居休闲</a></li>								        				
+						</ol>
+					</li>
+					<li data-type="culture">
+						<p>文教<span class="am-icon-angle-right am-fr"></span></p>
+						<ol class="am-breadcrumb topbar-slash">
+							<li><a href="#">中小学教辅</a></li>
+							<li><a href="#">外语</a></li>
+							<li><a href="#">教材</a></li>
+							<li><a href="#">医学</a></li>
+							<li><a href="#">计算机</a></li>
+							<li><a href="#">自然科学</a></li>  				
+						</ol>   
+					</li>
+					<!-- 必须存在 不可被迭代 -->
+					<li>
+						<a href="./bookTypes.html" class="index-bt-all">全部商品分类……</a>
+					</li>
+				</ul>
+				<div id="typesDetail" class="topbar-types-detail">
+					<!-- JS 生成 -->
+					<!-- 页面元素结构 -->
+					<!-- 
+					<div class="topbar-detail-types">
+						<p>小说</p>
+						<ul>
+							<li>
+								<a href="#">外国小说</a>
+							</li>
+							<li>
+								<a href="#">中国当代小说</a>
+							</li>
+							<li>
+								<a href="#">中国古典小说</a>
+							</li>
+							<li>
+								<a href="#">中国近现代小说</a>
+							</li>
+							<li>
+								<a href="#">悬疑推理</a>
+							</li>
+							<li>
+								<a href="#">科幻小说</a>
+							</li>
+							<li>
+								<a href="#">世界名著四大名著</a>
+							</li>
+							<li>
+								<a href="#">作品集</a>
+							</li>
+						</ul>
+					</div>
+					<div class="topbar-detail-types">
+						<p>文学</p>
+						<ul>
+							<li>
+								<a href="#">外国诗歌</a>
+							</li>
+							<li>
+								<a href="#">中国古诗词</a>
+							</li>
+							<li>
+								<a href="#">中国现当代诗歌</a>
+							</li>
+							<li>
+								<a href="#">外国散文</a>
+							</li>
+							<li>
+								<a href="#">中国现当代散文</a>
+							</li>
+							<li>
+								<a href="#">中国古代散文文学理论</a>
+							</li>
+							<li>
+								<a href="#">文集</a>
+							</li>
+							<li>
+								<a href="#">戏剧</a>
+							</li>
+						</ul>
+					</div> 
+					-->
+					<!-- 页面元素结构 -->
+				</div>					
+			</div>
+		</div>
+		<!-- books types end -->
+
+		<!-- index 页面 内容开始 -->
+		<!-- index content start -->
+		<div class="am-container" >
+			<div class="am-u-sm-2 topbar-book-types" style="position: static;">
+				<!-- 全站5星好书 -->
+				<div class="index-star">
+					<a href="./praiseBook.html">2017网友推荐<br>五星好书</a>
+				</div>
+				<!-- 全站5星好书 -->
+			</div>
+			<!-- imgs silder start -->
+			<div class="am-u-sm-10 am-u-end">
+				<div class="am-slider am-slider-default index-slides" data-am-flexslider>
+					<ul class="am-slides">
+						<li><img src="./img/slides/1.jpg" /></li>
+						<li><img src="./img/slides/2.jpg" /></li>
+						<li><img src="./img/slides/3.jpg" /></li>
+						<li><img src="./img/slides/4.jpg" /></li>
+						<li><img src="./img/slides/5.jpg" /></li>
+						<li><img src="./img/slides/6.jpg" /></li>
+					</ul>
+				</div>
+			</div>
+			<!-- imgs silder end -->
+			<!--  recommend start -->
+			<div class="am-u-sm-7 am-u-end">
+				<div class="index-recommend">
+					<div class="am-tabs" data-am-tabs="{noSwipe: 1}" id="doc-tab-demo-1">
+						<ul class="am-tabs-nav am-nav am-nav-tabs">
+							<li class="am-active"><a href="javascript: void(0)">猜你喜欢</a></li>
+							<li><a href="javascript: void(0)">本周精选</a></li>
+							<li><a href="javascript: void(0)">主编推荐</a></li>
+						</ul>
+	
+						<div class="am-tabs-bd">
+							<!-- 猜你喜欢 start -->
+							<div class="am-tab-panel index-hots am-active">
+								<div class="am-intro am-cf am-intro-default" >
+									<div class="am-g am-intro-bd">
+										<div class="am-intro-left am-u-sm-4 index-recommend-hot">
+											<img src="./img/recommend/s5600402.jpg"/>
+										</div>
+										<div class="am-intro-right am-u-sm-8">
+											<p class="index-book-name">洞灵小志 续志 补志</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+											<p class="index-book-desc">
+												这是一本讲述离我们不太久远的鬼怪故事的书，多为20世纪二三十年代民间以及士大
+												夫之间流传的各类奇闻异事。谈鬼说狐居多，间及公案游侠、海内异闻，诸如赶尸、移腐、
+												接火、查花等湘粤奇俗，均首见于此书。
+											</p> 
+										</div>
+									</div>
+								</div>
+								<div class="index-list-hots">
+									<ul class="am-avg-sm-4 am-thumbnails index-hot-list">
+										<li>
+											<img src="./img/recommend/s4018703.jpg" />
+											<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s6383723.jpg" />
+											<p>罗马女人/意大利文学大师莫拉维亚作品</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img  src="./img/recommend/s6473996.jpg" />
+											<p>教皇往事-波吉亚家族/著名历史学家希伯特传记作品</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s7278751.jpg" />
+											<p>美了千年 却被淡忘-诗经名物图解</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<!-- 猜你喜欢 end -->
+							<!-- 本周精选 start -->
+							<div class="am-tab-panel index-hots">
+								<div class="am-intro am-cf am-intro-default" >
+									<div class="am-g am-intro-bd">
+										<div class="am-intro-left am-u-sm-4 index-recommend-hot">
+											<img src="./img/recommend/s7712563.jpg"/>
+										</div>
+										<div class="am-intro-right am-u-sm-8">
+											<p class="index-book-name">刺杀骑士团长(全二册)</p>
+											<p class="index-book-sal">
+												<span>￥68.6</span>
+												<del>￥98.0</del>												
+											</p>
+											<p class="index-book-desc">
+												村上春树七年磨一剑长篇巨著、突破之作，关于创伤、内省、对峙、重生，
+												2017年度日本小说类榜首。一幅藏匿于阁楼的惊世画作，串起战争年代挥
+												之不去的伤痛经历和现实生活中超脱想象的意外离奇
+											</p>
+										</div>
+									</div>
+								</div>
+								<div class="index-list-hots">
+									<ul class="am-avg-sm-4 am-thumbnails index-hot-list">
+										<li>
+											<img src="./img/recommend/s7702239.jpg" />
+											<p>人类的衣服(精)/超大开本 精美装帧</p>
+											<p class="index-book-sal">
+												<span>￥93.4</span>
+												<del>￥128.0</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s7625105.jpg" />
+											<p>世界美术名作二十讲/傅雷美术史名作</p>
+											<p class="index-book-sal">
+												<span>￥27.4</span>
+												<del>￥38.0</del>												
+											</p>
+										</li>
+										<li>
+											<img  src="./img/recommend/s7551390.jpg" />
+											<p>我们为什么会恐惧:42+N个科学未解之谜</p>
+											<p class="index-book-sal">
+												<span>￥43.5</span>
+												<del>￥58.0</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s7568012.jpg" />
+											<p>放学后/东野圭吾成名作 江户川乱步奖</p>
+											<p class="index-book-sal">
+												<span>￥29.3</span>
+												<del>￥45.0</del>												
+											</p>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<!-- 本周精选 end -->
+							<!-- 主编推荐 start -->
+							<div class="am-tab-panel index-hots">
+								<div class="am-intro am-cf am-intro-default" >
+									<div class="am-g am-intro-bd">
+										<div class="am-intro-left am-u-sm-4 index-recommend-hot">
+											<img src="./img/recommend/s5600402.jpg"/>
+										</div>
+										<div class="am-intro-right am-u-sm-8">
+											<p class="index-book-name">洞灵小志 续志 补志</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+											<p class="index-book-desc">
+												这是一本讲述离我们不太久远的鬼怪故事的书，多为20世纪二三十年代民间以及士大
+												夫之间流传的各类奇闻异事。谈鬼说狐居多，间及公案游侠、海内异闻，诸如赶尸、移腐、
+												接火、查花等湘粤奇俗，均首见于此书。
+											</p> 
+										</div>
+									</div>
+								</div>
+								<div class="index-list-hots">
+									<ul class="am-avg-sm-4 am-thumbnails index-hot-list">
+										<li>
+											<img src="./img/recommend/s4018703.jpg" />
+											<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s6383723.jpg" />
+											<p>罗马女人/意大利文学大师莫拉维亚作品</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img  src="./img/recommend/s6473996.jpg" />
+											<p>教皇往事-波吉亚家族/著名历史学家希伯特传记作品</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+										<li>
+											<img src="./img/recommend/s7278751.jpg" />
+											<p>美了千年 却被淡忘-诗经名物图解</p>
+											<p class="index-book-sal">
+												<span>￥14.6</span>
+												<del>￥48.6</del>												
+											</p>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<!-- 主编推荐 end -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- recommend  end -->
+			<!-- Selling start -->
+			<div class="am-u-sm-3 am-u-end">
+				<div class="index-selling">
+					<p>图书畅销榜<a href="#">更多>></a></p>
+					<ul class="am-list am-list-static am-list-border">
+						<li>01. 哀悼人<span>&gt;</span></li>
+						<li>02. 宋明理学与政治文化-当代中国学术文库.海外卷<span>&gt;</span></li>
+						<li>03. 费正清中国史<span>&gt;</span></li>
+						<li>04. 越战亲历记<span>&gt;</span></li>
+						<li>05. 给我的孩子讲：史前史<span>&gt;</span></li>
+						<li>06. 平凡的世界-普及本<span>&gt;</span></li>
+						<li>07. 读了明朝不明白<span>&gt;</span></li>
+						<li>08. 苏菲的世界<span>&gt;</span></li>
+						<li>09. 多彩的流放<span>&gt;</span></li>
+						<li>10. 大设计<span>&gt;</span></li>
+					</ul>
+				</div>
+			</div>
+			<!-- Selling end -->
+		</div>
+		<!-- index content end -->
+		<!-- 专题 start -->
+		<div class="am-container">
+			<div class="index-special">
+				<ul class="am-avg-sm-3 am-thumbnails">
+					<li><a href="#"><img src="./img/special/special01.jpg" /></a></li>
+					<li><a href="#"><img src="./img/special/special02.jpg" /></a></li>
+					<li><a href="#"><img src="./img/special/special03.jpg" /></a></li>
+				</ul>
+			</div>
+		</div>
+		<!-- 专题 end  -->
+		<!-- 淘书团&新书上架 start -->
+		<div class="am-container">
+			<!-- 淘书团 start -->			
+			<div class="index-plate">
+				<div class="name index-border">
+					<span>淘书团热销</span>
+					<span><a href="#">查看更多商品&gt;&gt;</a></span>
+				</div>
+				<ul class="am-avg-sm-4 am-thumbnails">
+					<li>
+						<a href="#">
+							<div class="am-panel am-panel-default">
+								<div class="am-panel-hd"><img src="./img/taoshu/taoshu01.jpg"></div>
+								<div class="am-panel-bd">
+									<p class="desc">
+										《胡适文存》精装全4册，是胡适思想的精华，影响了一代又一代青年，
+										从大学者梁实秋、钱锺书，到著名作家张爱玲，直到当代的李敖，都把
+										《胡适文存》列为对自己影响zui大的书。本套是民国时期全套17卷亚东版
+										《胡适文存》与商务印书馆版《胡适论学近著》重新整理的合集，以尊重原著为原则，
+										不对原文作任何改动，只进行繁简字体和及横竖排版转换。本书展现了胡适的哲学思想、
+										学术主张、文学理论、白话文思考，以及新文化运动的探
+									</p>
+									<p class="price">
+										<span>团购价:￥68 <del>￥188</del></span>
+										<span class="am-badge am-badge-secondary">3.6折</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="am-panel am-panel-default">
+								<div class="am-panel-hd"><img src="./img/taoshu/taoshu02.jpg"></div>
+								<div class="am-panel-bd">
+									<p class="desc">
+										《每周三超低价！“神州轶闻录”系列之《老滋味》《老俗事》2册，文史作家周简段以乡土怀旧的笔触，
+										记叙了旧时代的民间风味、佳酿铭茶、市井小景、时令逸趣，并穿插百多幅珍贵老照片。
+										书法家溥杰、启功题签，梁漱溟、冰心总序，其中《老滋味》由陈云夫人于若木作序，
+										《老俗事》由老舍夫人胡絮青作序。定价49元，现团购价17.9元，全国包快递！
+									</p>
+									<p class="price">
+										<span>团购价:￥17.9 <del>￥49</del></span>
+										<span class="am-badge am-badge-secondary">3.7折</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="am-panel am-panel-default">
+								<div class="am-panel-hd"><img src="./img/taoshu/taoshu03.jpg"></div>
+								<div class="am-panel-bd">
+									<p class="desc">
+										德国引进，奉献给孩子的哲学启蒙书！《大猪小猪看世界》48开精装全8册，根据德国热播多年的经典动画片改编而成。
+										主人公皮格是一个总爱提问的小猪，无论它问多么复杂的问题，智慧的哥哥弗雷德都能予以简单的解答。
+										活泼幽默的插画配以幽默风趣的对话，可帮助小读者理解什么是爱、遗忘、争吵、幸运、流浪、孤单、懒惰、耐心等词汇。
+										猪哥哥的回答也非常值得家长借鉴，在保护孩子好奇心的同时，适当地启发他们的逻辑思维。定价88
+									</p>
+									<p class="price">
+										<span>团购价:￥32 <del>￥88</del></span>
+										<span class="am-badge am-badge-secondary">3.6折</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="am-panel am-panel-default">
+								<div class="am-panel-hd"><img src="./img/taoshu/taoshu04.jpg"></div>
+								<div class="am-panel-bd">
+									<p class="desc">
+											二月河长篇力作《乾隆皇帝》全6册，以大量的史料为依据，描绘了乾隆时期广阔的社会场景。
+											上至庙堂之高，下至江湖之远，宫闱、闺阁、市井、乡野、沙场、行院……无不涉及，
+											展现了当时政治、经济、军事、文化等各方面的历史风云变迁，堪称清代中期的一部百科全书。
+											作品结构紧凑，故事情节跌宕，气势恢宏，文笔老辣，值得多次品读。定价144元，现团购价49元，全国包快递！
+									</p>
+									<p class="price">
+										<span>团购价:￥49 <del>￥144</del></span>
+										<span class="am-badge am-badge-secondary">3.4折</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<!-- 淘书团 end -->
+			<!-- 新书上架 start -->
+			<div class="index-plate">
+				<div class="name">
+					<span>新书上架促销</span>
+					<span><a href="#">查看更多商品&gt;&gt;</a></span>
+				</div>
+				<ul class="am-avg-sm-5 am-thumbnails index-newbook">
+					<li><a href="#">
+						<div class="bookTitle">
+							<p>读书会-民国秘史</p>
+							<p>萨沙编著</p>
+							<div class="price">
+								<span>¥9.9</span>
+								<del>¥33.0</del>
+							</div>						
+						</div>
+						<div class="bookImg">
+							<img src="./img/newbook/newbook01.jpg">
+						</div>
+					</a></li>
+					<li><a href="#">
+						<div class="bookTitle">
+							<p>下课后的奇幻补习班</p>
+							<p>刘炯朗</p>
+							<div class="price">
+								<span>¥9.9</span>
+								<del>¥33.0</del>
+							</div>	
+						</div>
+						<div class="bookImg">
+							<img src="./img/newbook/newbook02.jpg">
+						</div>
+					</a></li>
+					<li><a href="#">
+						<div class="bookTitle">
+							<p>汉字书写与书法艺术</p>
+							<p>余志海</p>
+							<div class="price">
+								<span>¥9.9</span>
+								<del>¥33.0</del>
+							</div>	
+						</div>
+						<div class="bookImg">
+							<img src="./img/newbook/newbook03.jpg">
+						</div>
+					</a></li>
+					<li><a href="#">
+						<div class="bookTitle">
+							<p>宇宙中的星系(第二版)</p>
+							<p>（美）斯帕克，（美）加拉格　著，邹振隆　译</p>
+							<div class="price">
+								<span>¥9.9</span>
+								<del>¥33.0</del>
+							</div>	
+						</div>
+						<div class="bookImg">
+							<img src="./img/newbook/newbook04.jpg">
+						</div>
+					</a></li>
+					<li><a href="#">
+						<div class="bookTitle">
+							<p>列子臆说-上册</p>
+							<p>南怀瑾 讲述</p>
+							<div class="price">
+								<span>¥9.9</span>
+								<del>¥33.0</del>
+							</div>							
+						</div>
+						<div class="bookImg">
+							<img src="./img/newbook/newbook05.jpg">
+						</div>
+					</a></li>
+				</ul>
+			</div>	
+			<!-- 新书上架 end -->
+		</div>
+		<!-- 淘书团&新书上架 end  -->
+		<!-- 平台自营 start  -->
+		<div class="am-container">
+			<div class="am-g index-from">
+				<div class="title">
+					<div class="am-u-sm-2">
+						<span class="name">平台自营</span>
+					</div>
+					<div class="am-u-sm-10">
+						<ul class="menu" id="fromMenu">
+							<li class="index-from-active" data-type="type1"><span>小说</span></li>
+							<li data-type="type2"><span>诗歌散文</span></li>
+							<li data-type="type3"><span>青春文学</span></li>
+							<li data-type="type4"><span>其它</span></li>
+						</ul>
+					</div>
+				</div>
+				<div class="content">
+					<div class="am-u-sm-2 top">
+						<p class="tip">自营好书推荐</p>
+						<img src="./img/recommend/s4018703.jpg" />
+						<p class="name">面对危机中的世界/克里希那穆提欧洲演讲集</p>
+						<p class="index-book-sal">
+							<span>￥14.6</span>
+							<del>￥48.6</del>												
+						</p>
+					</div>
+					<div class="am-u-sm-10">
+						<ul class="am-avg-sm-5 am-thumbnails index-hot-list" id="fromContent">
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+							<li>
+								<img src="./img/recommend/s4018703.jpg" />
+								<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+								<p class="index-book-sal">
+									<span>￥14.6</span>
+									<del>￥48.6</del>												
+								</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 平台自营 end  -->
+		<!-- 出版设直销 start  -->
+		<div class="am-container">
+			<div class="index-press">
+				<div class="name">出版设直销</div>
+			</div>
+			<div class="index-press-content">
+				<div class="am-u-sm-2">
+					<ul class="am-list press-list" id="pressList">					
+						<li class="cur" data-press="0">人民文学出版社</li>
+						<li data-press="1">作家出版社</li>
+						<li data-press="0">中华书局</li>
+						<li data-press="1">现代出版社</li>
+						<li data-press="0">广西师范大学出版社</li>
+						<li data-press="1">人民出版社</li>
+						<li data-press="0">青岛出版社</li>
+						<li data-press="1">长江文艺出版社</li>
+						<li data-press="0">河北教育出版社</li>
+						<li data-press="1">云南人民出版社</li>
+						<li data-press="0">海豚出版社</li>
+						<li data-press="1">天津人民出版社</li>
+					</ul>
+					<div class="more-list">
+						<div class="btnArrow">
+							<span class="upArrow" id="upArrow"><i class="am-icon-chevron-up"></i></span>
+							<span class="downArrow" id="downArrow"><i class="am-icon-chevron-down"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="am-u-sm-10" id="pressDetail">
+					<div class="pubText">
+						<h3>
+							<a href="#">中华书局</a>
+						</h3>
+						<div class="publishInfo">
+							<p>
+								中华书局于1912年元旦由陆费逵先生在上海创办，是中国近现代最悠久的出版社之一。
+								百馀年来，中华书局恪守传承文明职责，专注于优秀传统文化出版，在海内外享有盛誉。
+								特别是从1958年至1978年，历经二十年时间，组织整理、出版的“二十四史”及《清史稿》点校本，
+								被公认为新中国最伟大的古籍整理工程。相继编辑出版了《全上古三代秦汉三国六朝文》《先秦汉魏晋南北朝诗》
+								《全唐文》《全唐诗》《全宋词》《古本小说丛刊》《甲骨文合集》《资治通鉴》《文苑英华》《太平御览》
+								等一大批古代文史哲经典文献，在学术界、读书界、教育界有着广泛的影响。
+								中华书局于1912年元旦由陆费逵先生在上海创办，是中国近现代最悠久的出版社之一。
+								百馀年来，中华书局恪守传承文明职责，专注于优秀传统文化出版，在海内外享有盛誉。
+								特别是从1958年至1978年，历经二十年时间，组织整理、出版的“二十四史”及《清史稿》点校本，
+								被公认为新中国最伟大的古籍整理工程。相继编辑出版了《全上古三代秦汉三国六朝文》《先秦汉魏晋南北朝诗》
+								《全唐文》《全唐诗》《全宋词》《古本小说丛刊》《甲骨文合集》《资治通鉴》《文苑英华》《太平御览》
+								等一大批古代文史哲经典文献，在学术界、读书界、教育界有着广泛的影响。
+							</p>
+						</div>
+						<ul class="am-avg-sm-5 am-thumbnails index-hot-list">
+							<li>
+								<a href="#">
+									<img src="./img/recommend/s4018703.jpg" />
+									<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+									<p class="index-book-sal">
+										<span>￥14.6</span>
+										<del>￥48.6</del>												
+									</p>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<img src="./img/recommend/s5600402.jpg" />
+									<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+									<p class="index-book-sal">
+										<span>￥14.6</span>
+										<del>￥48.6</del>												
+									</p>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<img src="./img/recommend/s6383723.jpg" />
+									<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+									<p class="index-book-sal">
+										<span>￥14.6</span>
+										<del>￥48.6</del>												
+									</p>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<img src="./img/recommend/s6473996.jpg" />
+									<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+									<p class="index-book-sal">
+										<span>￥14.6</span>
+										<del>￥48.6</del>												
+									</p>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<img src="./img/recommend/s7278751.jpg" />
+									<p>面对危机中的世界/克里希那穆提欧洲演讲集</p>
+									<p class="index-book-sal">
+										<span>￥14.6</span>
+										<del>￥48.6</del>												
+									</p>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 出版设直销 end  -->		
+		<!-- foot start -->		
+		<div class="base-shop-foot">
+			<p>© 2018 南京网博优壹 by 项目组-chw <br>2018年03月21日23:20:50</p>
+		</div>
+		<!-- foot end -->		
+		
+	</body>
+
+</html>

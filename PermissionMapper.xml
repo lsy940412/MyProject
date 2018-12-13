@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itany.mapper.PermissionMapper">
+    <resultMap id="mapper1" type="Permission">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sname" property="sname"/>
+        <result column="url" property="url"/>
+        <result column="parentid" property="parentid"/>
+        <association property="parent" javaType="com.itany.pojo.Permission">
+            <id column="pname" property="name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="mapper2" type="com.itany.vo.PermissionVo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sname" property="sname"/>
+        <result column="url" property="url"/>
+        <result column="pid" property="parentId"/>
+        <result column="pname" property="parentName"/>
+    </resultMap>
+
+    <sql id="permissoinColumn">
+        id,
+        name,
+        parentid,
+        sname,
+        url
+    </sql>
+
+    <select id="selectByName" parameterType="com.itany.vo.PermissionVo" resultMap="mapper1">
+        select p1.id,p1.name ,p1.sname,p1.url,p1.parentid,
+        (select name from t_permission  where p1.parentid = id)pname
+        from t_permission p1
+        <where>
+            <if test="name != null and name != ''">
+                <bind name="name" value="'%'+ _parameter.name +'%'"/>
+                  and p1.name like #{name} escape '/'
+            </if>
+            <if test="parentName != null and parentName != ''">
+                <bind name="parentName" value="'%'+ _parameter.parentName +'%'"/>
+                and (select name from t_permission p2 where p1.parentid = p2.id) like #{parentName} escape '/'
+            </if>
+        </where>
+
+    </select>
+
+
+    <select id="selectById" parameterType="int" resultMap="mapper2" >
+        select p1.id,p1.name ,p1.sname,p1.url,p2.name pname,p2.id pid
+        from t_permission p1
+        left join t_permission p2 on p1.parentid = p2.id
+        where p1.id = #{id}
+    </select>
+
+    <select id="selectParent" resultType="com.itany.pojo.Permission">
+        select <include refid="permissoinColumn"></include>
+        from t_permission
+        where parentid = 0
+    </select>
+
+    <update id="updateById" parameterType="com.itany.vo.PermissionVo">
+        update t_permission set
+        name = #{name},
+        url = #{url},
+        sname = #{sname},
+        parentid = #{parentId}
+        where id = #{id}
+    </update>
+
+
+    <!--tree begin -->
+
+    <resultMap id="m1" type="com.itany.vo.TreeVo">
+        <id column="id" property="id"/>
+        <result column="name" property="text"/>
+        <result column="parentid" property="parentId"/>
+        <collection property="children" ofType="com.itany.vo.TreeVo" select="s2" column="id"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="m1">
+        select id,name,parentid from t_permission where parentid = 0
+    </select>
+
+    <select id="s2" resultMap="m1">
+        select id ,name,parentid from t_permission where parentid = #{id}
+    </select>
+    <!--tree end -->
+
+
+
+
+
+
+
+</mapper>

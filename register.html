@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>注册页</title>
+		<!-- 设置360浏览器渲染引擎 -->
+		<meta name="renderer" content="webkit">
+		<link rel="icon" type="image/png" href="img/favicon.png">
+		<link rel="stylesheet" type="text/css" href="amazeui/css/amazeui.css" />
+		<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="amazeui/js/amazeui.js"></script>
+		<!-- 全局CSS -->
+		<link rel="stylesheet" href="./css/base.css">
+		<!-- 当前页面 css -->
+		<link rel="stylesheet" type="text/css" href="css/register.css"/>
+		<!-- 当前页面功能 js -->
+		<script src="./js/pages/register.js"></script>
+
+
+		<script type="text/javascript">
+			$(function () {
+
+
+                $("#getPrive").click(function () {
+                    var phone=$("#doc-ipt-phone").val();
+					console.log($("#code").html());
+					console.log("进入注册");
+                    $.ajax({
+                        type:"post",
+                        url:"/user/userserver/sendCode",
+                        data:{"phone":phone},
+                        dataType:"json",
+                        success:function (data) {
+                            if(data.success==false){
+                                $("#aaa").html(data.msg);
+                            }else {
+                                console.log("发送成功，计时开始");
+                                $("#getPrive").val(60);
+
+								timer();
+							}
+                        }
+                    })
+					function timer(){
+                        var time=$("#getPrive").val();
+                        time=time-1;
+                        $("#getPrive").val(time);
+                        if(time==0){
+                            $("#getPrive").val("获取验证码");
+                            clearTimeout(timeout);
+                            $("#getPrive").attr("disabled",false);
+                        }else {
+                            $("#getPrive").attr("disabled",true);
+                            var timeout= setTimeout(timer,1000);
+						}
+
+                    };
+
+                })
+
+
+
+                $("#submit").click(function () {
+                    $.ajax({
+                        type:"post",
+                        url:"/user/userserver/addUser",
+                        data:{"phone":$("#doc-ipt-phone").val(),
+                            "password":$("#doc-ipt-pwd-password").val(),
+                            "rePassword":$("#doc-ipt-pwd-repassword").val(),
+                            "reCode":$("#doc-ipt-pwd-code").val(),
+                            "verCode":$("#doc-ipt-pwd-prive").val(),
+                            "code":$("#code").html()
+                        },
+						dataType:"json",
+						success:function (result) {
+							if(result.success==true){
+							    location.href="/user/showlogin";
+							}else {
+							    $("#aaa").html(result.msg);
+							}
+                        }
+                    })
+
+                })
+            });
+
+
+		</script>
+	</head>
+	<body>
+		<!-- nav-start -->
+		<header>
+			<div class="base-nav">
+				<ul class="am-g am-g-fixed">
+					<li class="am-u-sm-6">
+						<img class="nav-img" src="./img/logo.png">
+					</li>
+					<li class="am-u-sm-2">
+						<div>√</div>
+						<span>正版好图书</span>
+					</li>
+					<li class="am-u-sm-2">
+						<div>邮</div>
+						<span>全场满69包邮</span>
+					</li>
+					<li class="am-u-sm-2">
+						<div>折</div>
+						<span>特价书一折起</span>
+					</li>
+				</ul>
+			</div>
+			
+		</header>
+		<!-- nav-end -->
+
+		<!-- register-start -->
+		<div class="am-g am-g-fixed reg-body">
+			<div class="reg-title am-g">
+				<h2 class="am-u-sm-2">新用户注册</h2>
+				<span class="am-u-sm-3">已有账号?<a href="#">请登录</a></span>
+			</div>
+			<div class="reg-content">
+				<form class="am-form am-form-horizontal">
+					<div class="am-form-group">
+					    <label for="doc-ipt-phone" class="am-u-sm-2 am-form-label">手机号码:</label>
+					    <div class="am-u-sm-5  am-u-end">
+					        <input type="phone " id="doc-ipt-phone" placeholder="请输入您的常用手机号码" required="required">
+					    </div>
+					</div>
+
+					<div class="am-form-group">
+					    <label for="doc-ipt-pwd-password" class="am-u-sm-2 am-form-label">设置密码:</label>
+					    <div class="am-u-sm-5  am-u-end">
+					        <input type="password" id="doc-ipt-pwd-password" placeholder="请输入密码" required="required">
+					    </div>
+					</div>
+
+					<div class="am-form-group">
+					    <label for="doc-ipt-pwd-repassword" class="am-u-sm-2 am-form-label">确认密码:</label>
+					    <div class="am-u-sm-5  am-u-end">
+					        <input type="password" id="doc-ipt-pwd-repassword" placeholder="请再次输入密码" required="required">
+					    </div>
+					</div>
+
+					<div class="am-form-group">
+					    <label for="doc-ipt-pwd-code" class="am-u-sm-2 am-form-label">验证码:</label>
+					    <div class="am-u-sm-3  am-u-end">
+					        <input type="password" id="doc-ipt-pwd-code" placeholder="请输入右图验证码">
+					        <p class="code" id="code"></p>
+					        <p class="change"><a href="javascript:void(0)" onclick="change()">换一换</a></p>
+					    </div>
+					</div>
+
+					<div class="am-form-group phone-code">
+					    <label for="doc-ipt-pwd-prive" class="am-u-sm-2 am-form-label">手机验证码:</label>
+					    <div class="am-u-sm-3  am-u-end">
+					        <input type="text" id="doc-ipt-pwd-prive" placeholder="请输入验证码">
+						</div>
+						<div class="am-u-sm-2  am-u-end">
+							<div class="get-code">
+								<input type="button" value="获取验证码" id="getPrive"></input>
+							</div>
+						</div>
+					</div>
+
+					<div  class="am-form-group">
+						<div class="am-u-sm-5  am-u-end">
+						 	<button type="button" id="submit" class="am-btn am-btn-block">立即注册</button><span id="aaa"></span>
+						</div>
+						
+					</div>
+
+				</form>
+			</div>
+			 
+		</div>
+		<!-- register-end -->
+		<!-- foot start -->	
+		<div class="base-shop-foot">
+			<p>© 2018 南京网博优壹 by 项目组-chw <br>2018年03月21日23:20:50</p>
+		</div>
+		<!-- foot end -->
+	</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员列表</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+	    //工具栏
+	    var toolbar = [{
+	        text: '新增',
+	        iconCls: 'icon-add',
+	        handler: function () {
+	            $("#user_name").textbox("setValue",null),
+                $("#password").textbox("setValue",null),
+
+	            $('#dd').dialog('open');
+	        }
+
+	    }, '-',{
+	        text: '修改',
+	        iconCls: 'icon-edit',
+	        handler: function () {
+
+
+	            $('#dd').dialog('open');}
+	    }];
+
+
+	   $(function(){
+	       $('#userlist').datagrid({  
+			title:'管理员列表',  
+			iconCls:'icon-save',   
+			url:'/manager/managerUser/findAll',
+			columns:[
+			    [
+				{field:'id',title:'管理员ID',width:100,align:'center'},
+				{field:'userName',title:'管理员名称',width:100,align:'center'},
+				{field:'password',title:'管理员密码',width:100,align:'center'},
+				{field:'roleList',title:'拥有的角色',width:200,align:'center',formatter:format}
+			]
+            ],
+
+               pagination:true,
+               singleSelect:true,
+               toolbar: toolbar
+		});
+		 //初始化查询栏
+		 $("#submit_search").linkbutton({ iconCls: 'icon-search', plain: true })
+            .click(function () {
+                $('#userlist').datagrid('load',{
+                    "username":$("#username").val(),
+                });
+            });
+          
+          //初始化修改窗口  
+         $('#dd').dialog({
+			    title: 'My Dialog',
+			    width: 700,
+			    height: 500,
+			    closed: true,
+			    cache: false,
+			    href: '',
+			    modal: true,
+			    iconCls: 'icon-save',
+                buttons: [{
+                    text:'提交',
+                    iconCls:'icon-ok',
+                    handler:function(){
+
+                        var list  = $("#ah").tree("getChecked");
+                        var ids = new Array();
+                        for (var i=0;i<list.length;i++){
+                            ids.push(list[i].id);
+                        }
+                        var roleIds = ids.join(",");
+
+                        $.ajax({
+                            type:"post",
+                            url:"/manager/managerUser/addManagerUser",
+                            data:{
+
+                                "username":$("#user_name").textbox("getValue"),
+                                "password":$("#password").textbox("getValue"),
+                                "roleIds":roleIds
+                            },
+                            success:function (data) {
+                                if(data.success== true){
+                                    alert('添加成功');
+                                    $("#dd").dialog("close");
+                                    $('#userlist').datagrid('load');
+                                }
+                            }
+                        })
+                    }
+                },{
+                    text:'关闭',
+                    handler:function(){
+                        alert('cancel');;
+                    }
+                }]
+			});
+			
+		   //tree选项框初始化
+           $("#ah").tree({
+               url:'/manager/managerUser/tree',
+			   method:'post',
+			   animate:true,
+			   checkbox:true
+           });
+            
+	   });
+	   
+	    //列格式化方法
+	   function format(val,row){
+	        var sel="<select name='search_type' style='width:100%'>";
+           for(var i = 0;i< val.length;i++ ){
+               sel = sel +"<option>"+ val[i].name+"</option>";
+           }
+           sel = sel + "</select>";
+			return sel;
+			}
+	</script>
+</head>
+<body>
+   <form name="searchform" method="post" action="" id ="searchform">
+    <td width="70" height="30"><strong>管理员查询：</strong></td>
+    <td height="30">
+        <input type="text" name="keyword" size=20 placeholder="管理员名称" id="username"/>
+        <a id="submit_search">搜索</a>
+    </td>
+  </form>
+  <table id="userlist"></table>
+    <div id="dd">
+           <div align="center" style="margin-top: 30px">
+            <form id="ff" method="post">
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" id="user_id" style="width:50%" data-options="label:'管理员ID:'" readonly="readonly"/>
+            </div>
+             <div style="margin-bottom:20px">
+                <input class="easyui-textbox" id="password" type="password"  style="width:50%" data-options="label:'管理员密码:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" id="user_name" style="width:50%" data-options="label:'管理员名称:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                  <table style="width:48%">
+                    <td valign="top" style="width:50px">
+                                                              角色:
+                    </td>
+                    <td><ul id="ah"></ul></td>
+                  </table>
+            </div>
+        </form>
+        </div>
+    </div>
+</body>
+</html>
